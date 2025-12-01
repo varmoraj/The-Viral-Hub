@@ -31,15 +31,15 @@
             overflow-x: hidden;
         }
 
-        /* Agreement Modal Styles - Transparent background */
+        /* Agreement Modal Styles */
         .agreement-modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.45); /* Light semi-transparent background */
-            backdrop-filter: blur(3px); /* Slight blur effect for background */
+            background: rgba(255, 255, 255, 0.65); /* Adjust transparency here */
+            backdrop-filter: blur(5px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -54,9 +54,9 @@
             width: 90%;
             max-height: 85vh;
             overflow-y: auto;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
             animation: modalAppear 0.5s ease-out;
-            border: 1px solid var(--border);
+            border: 2px solid rgba(0, 0, 0, 0.1);
         }
 
         @keyframes modalAppear {
@@ -224,15 +224,15 @@
             transform: translateY(-2px);
         }
 
-        /* Main Website Styles - ALWAYS VISIBLE IN BACKGROUND */
+        /* Main Website Styles */
         .website-content {
-            display: block; /* Always show in background */
+            display: block;
             filter: blur(0);
             transition: filter 0.3s;
         }
 
         .agreement-modal.active ~ .website-content {
-            filter: blur(3px); /* Blur website when modal is active */
+            filter: blur(3px);
         }
 
         /* Header Styles */
@@ -402,11 +402,11 @@
             transition: transform 0.3s, box-shadow 0.3s;
             border: 1px solid var(--border);
             cursor: pointer;
-            pointer-events: none; /* Disable clicks when modal is active */
+            pointer-events: none;
         }
 
         .agreement-modal.active ~ .website-content .video-card {
-            pointer-events: none; /* Disable clicks when modal is active */
+            pointer-events: none;
         }
 
         .video-card:hover {
@@ -483,6 +483,18 @@
             font-size: 0.85rem;
         }
 
+        /* Fallback for missing images */
+        .fallback-thumbnail {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+
         /* Categories */
         .categories {
             display: flex;
@@ -499,11 +511,11 @@
             cursor: pointer;
             transition: all 0.3s;
             border: 1px solid var(--border);
-            pointer-events: none; /* Disable clicks when modal is active */
+            pointer-events: none;
         }
 
         .agreement-modal.active ~ .website-content .category {
-            pointer-events: none; /* Disable clicks when modal is active */
+            pointer-events: none;
         }
 
         .category.active, .category:hover {
@@ -622,7 +634,7 @@
     </style>
 </head>
 <body>
-    <!-- Agreement Modal - Shows over website background -->
+    <!-- Agreement Modal -->
     <div class="agreement-modal" id="agreementModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -667,7 +679,6 @@
                 </ul>
             </div>
             
-            <!-- Only two buttons - no checkbox -->
             <div class="modal-buttons">
                 <button class="btn btn-disagree" id="disagreeBtn">
                     <i class="fas fa-times"></i>
@@ -681,7 +692,7 @@
         </div>
     </div>
 
-    <!-- Exit Screen (shown when user disagrees) -->
+    <!-- Exit Screen -->
     <div class="exit-screen" id="exitScreen">
         <i class="fas fa-door-closed"></i>
         <h2>Access Denied</h2>
@@ -696,7 +707,7 @@
         <button class="btn-return" id="returnBtn">Return to Terms</button>
     </div>
 
-    <!-- Main Website Content - ALWAYS VISIBLE IN BACKGROUND -->
+    <!-- Main Website Content -->
     <div class="website-content" id="websiteContent">
         <!-- Header -->
         <header>
@@ -752,11 +763,12 @@
                 <a href="#" class="view-all">View All</a>
             </div>
             
-            <div class="video-grid">
-                <!-- Video Card 1 -->
-                <div class="video-card" onclick="openVideo('trending-1')">
+            <div class="video-grid" id="trendingVideoGrid">
+                <!-- Video Cards will be loaded dynamically from links.js -->
+                <!-- Fallback content -->
+                <div class="video-card" onclick="openVideoLink('trending-1')">
                     <div class="thumbnail-container">
-                        <div class="thumbnail" style="background: linear-gradient(135deg, #667eea, #764ba2);"></div>
+                        <img class="thumbnail" src="" alt="Video Poster" onerror="this.style.display='none'; this.parentNode.innerHTML='<div class=\'fallback-thumbnail\'><i class=\'fas fa-play\'></i></div>';">
                         <div class="play-overlay">
                             <div class="play-icon">
                                 <i class="fas fa-play"></i>
@@ -764,18 +776,17 @@
                         </div>
                     </div>
                     <div class="video-info">
-                        <div class="video-title">Latest Blockbuster Movie Official Trailer</div>
+                        <div class="video-title">Loading video...</div>
                         <div class="video-meta">
-                            <span>Movie Trailers</span>
-                            <span>2.1M views</span>
+                            <span>Loading...</span>
+                            <span>...</span>
                         </div>
                     </div>
                 </div>
-
-                <!-- Video Card 2 -->
-                <div class="video-card" onclick="openVideo('trending-2')">
+                
+                <div class="video-card" onclick="openVideoLink('trending-2')">
                     <div class="thumbnail-container">
-                        <div class="thumbnail" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
+                        <img class="thumbnail" src="" alt="Video Poster" onerror="this.style.display='none'; this.parentNode.innerHTML='<div class=\'fallback-thumbnail\'><i class=\'fas fa-play\'></i></div>';">
                         <div class="play-overlay">
                             <div class="play-icon">
                                 <i class="fas fa-play"></i>
@@ -783,18 +794,17 @@
                         </div>
                     </div>
                     <div class="video-info">
-                        <div class="video-title">Top Viral Moments of The Week</div>
+                        <div class="video-title">Loading video...</div>
                         <div class="video-meta">
-                            <span>Entertainment</span>
-                            <span>850K views</span>
+                            <span>Loading...</span>
+                            <span>...</span>
                         </div>
                     </div>
                 </div>
-
-                <!-- Video Card 3 -->
-                <div class="video-card" onclick="openVideo('trending-3')">
+                
+                <div class="video-card" onclick="openVideoLink('trending-3')">
                     <div class="thumbnail-container">
-                        <div class="thumbnail" style="background: linear-gradient(135deg, #4facfe, #00f2fe);"></div>
+                        <img class="thumbnail" src="" alt="Video Poster" onerror="this.style.display='none'; this.parentNode.innerHTML='<div class=\'fallback-thumbnail\'><i class=\'fas fa-play\'></i></div>';">
                         <div class="play-overlay">
                             <div class="play-icon">
                                 <i class="fas fa-play"></i>
@@ -802,18 +812,17 @@
                         </div>
                     </div>
                     <div class="video-info">
-                        <div class="video-title">Chart-Topping Music Video Release</div>
+                        <div class="video-title">Loading video...</div>
                         <div class="video-meta">
-                            <span>Music</span>
-                            <span>5.4M views</span>
+                            <span>Loading...</span>
+                            <span>...</span>
                         </div>
                     </div>
                 </div>
-
-                <!-- Video Card 4 -->
-                <div class="video-card" onclick="openVideo('trending-4')">
+                
+                <div class="video-card" onclick="openVideoLink('trending-4')">
                     <div class="thumbnail-container">
-                        <div class="thumbnail" style="background: linear-gradient(135deg, #43e97b, #38f9d7);"></div>
+                        <img class="thumbnail" src="" alt="Video Poster" onerror="this.style.display='none'; this.parentNode.innerHTML='<div class=\'fallback-thumbnail\'><i class=\'fas fa-play\'></i></div>';">
                         <div class="play-overlay">
                             <div class="play-icon">
                                 <i class="fas fa-play"></i>
@@ -821,26 +830,27 @@
                         </div>
                     </div>
                     <div class="video-info">
-                        <div class="video-title">Ultimate Sports Highlights Compilation</div>
+                        <div class="video-title">Loading video...</div>
                         <div class="video-meta">
-                            <span>Sports</span>
-                            <span>1.8M views</span>
+                            <span>Loading...</span>
+                            <span>...</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Recently Added -->
+            <!-- Recently Added Section -->
             <div class="section-header">
                 <h2 class="section-title">Recently Added</h2>
                 <a href="#" class="view-all">View All</a>
             </div>
             
-            <div class="video-grid">
-                <!-- Video Card 5 -->
-                <div class="video-card" onclick="openVideo('recent-1')">
+            <div class="video-grid" id="recentVideoGrid">
+                <!-- Video Cards will be loaded dynamically from links.js -->
+                <!-- Fallback content -->
+                <div class="video-card" onclick="openVideoLink('recent-1')">
                     <div class="thumbnail-container">
-                        <div class="thumbnail" style="background: linear-gradient(135deg, #fa709a, #fee140);"></div>
+                        <img class="thumbnail" src="" alt="Video Poster" onerror="this.style.display='none'; this.parentNode.innerHTML='<div class=\'fallback-thumbnail\'><i class=\'fas fa-play\'></i></div>';">
                         <div class="play-overlay">
                             <div class="play-icon">
                                 <i class="fas fa-play"></i>
@@ -848,18 +858,17 @@
                         </div>
                     </div>
                     <div class="video-info">
-                        <div class="video-title">Comedy Special Preview - New Release</div>
+                        <div class="video-title">Loading video...</div>
                         <div class="video-meta">
-                            <span>Comedy</span>
-                            <span>320K views</span>
+                            <span>Loading...</span>
+                            <span>...</span>
                         </div>
                     </div>
                 </div>
-
-                <!-- Video Card 6 -->
-                <div class="video-card" onclick="openVideo('recent-2')">
+                
+                <div class="video-card" onclick="openVideoLink('recent-2')">
                     <div class="thumbnail-container">
-                        <div class="thumbnail" style="background: linear-gradient(135deg, #a8edea, #fed6e3);"></div>
+                        <img class="thumbnail" src="" alt="Video Poster" onerror="this.style.display='none'; this.parentNode.innerHTML='<div class=\'fallback-thumbnail\'><i class=\'fas fa-play\'></i></div>';">
                         <div class="play-overlay">
                             <div class="play-icon">
                                 <i class="fas fa-play"></i>
@@ -867,18 +876,17 @@
                         </div>
                     </div>
                     <div class="video-info">
-                        <div class="video-title">Educational Science Series Episode 5</div>
+                        <div class="video-title">Loading video...</div>
                         <div class="video-meta">
-                            <span>Education</span>
-                            <span>150K views</span>
+                            <span>Loading...</span>
+                            <span>...</span>
                         </div>
                     </div>
                 </div>
-
-                <!-- Video Card 7 -->
-                <div class="video-card" onclick="openVideo('recent-3')">
+                
+                <div class="video-card" onclick="openVideoLink('recent-3')">
                     <div class="thumbnail-container">
-                        <div class="thumbnail" style="background: linear-gradient(135deg, #d299c2, #fef9d7);"></div>
+                        <img class="thumbnail" src="" alt="Video Poster" onerror="this.style.display='none'; this.parentNode.innerHTML='<div class=\'fallback-thumbnail\'><i class=\'fas fa-play\'></i></div>';">
                         <div class="play-overlay">
                             <div class="play-icon">
                                 <i class="fas fa-play"></i>
@@ -886,18 +894,17 @@
                         </div>
                     </div>
                     <div class="video-info">
-                        <div class="video-title">Gaming Tournament Highlights - Finals</div>
+                        <div class="video-title">Loading video...</div>
                         <div class="video-meta">
-                            <span>Gaming</span>
-                            <span>950K views</span>
+                            <span>Loading...</span>
+                            <span>...</span>
                         </div>
                     </div>
                 </div>
-
-                <!-- Video Card 8 -->
-                <div class="video-card" onclick="openVideo('recent-4')">
+                
+                <div class="video-card" onclick="openVideoLink('recent-4')">
                     <div class="thumbnail-container">
-                        <div class="thumbnail" style="background: linear-gradient(135deg, #89f7fe, #66a6ff);"></div>
+                        <img class="thumbnail" src="" alt="Video Poster" onerror="this.style.display='none'; this.parentNode.innerHTML='<div class=\'fallback-thumbnail\'><i class=\'fas fa-play\'></i></div>';">
                         <div class="play-overlay">
                             <div class="play-icon">
                                 <i class="fas fa-play"></i>
@@ -905,10 +912,10 @@
                         </div>
                     </div>
                     <div class="video-info">
-                        <div class="video-title">Lifestyle Vlog - Travel Adventure Series</div>
+                        <div class="video-title">Loading video...</div>
                         <div class="video-meta">
-                            <span>Lifestyle</span>
-                            <span>420K views</span>
+                            <span>Loading...</span>
+                            <span>...</span>
                         </div>
                     </div>
                 </div>
@@ -965,6 +972,9 @@
         </footer>
     </div>
 
+    <!-- Include links.js file -->
+    <script src="links.js"></script>
+    
     <script>
         // Agreement functionality
         const agreementModal = document.getElementById('agreementModal');
@@ -983,6 +993,7 @@
                 websiteContent.style.display = 'block';
                 exitScreen.style.display = 'none';
                 enableWebsiteInteractions();
+                loadVideoContent(); // Load video content after agreement
             } else {
                 // First time visit, show agreement modal over website
                 agreementModal.style.display = 'flex';
@@ -1033,7 +1044,8 @@
             exitScreen.style.display = 'none';
             enableWebsiteInteractions();
             
-           
+            // Load video content after agreement
+            loadVideoContent();
         });
 
         // Handle disagreement
@@ -1056,15 +1068,67 @@
             disableWebsiteInteractions();
         });
 
-        // Website functionality
-        function openVideo(videoId) {
-            // Check if user has agreed
-            if (localStorage.getItem('viralHubAgreed') !== 'true') {
-                alert('Please agree to the Terms & Conditions first!');
+        // Function to load video content dynamically
+        function loadVideoContent() {
+            // Check if videoData is available
+            if (typeof videoData === 'undefined') {
+                console.error('links.js not loaded or videoData not defined');
                 return;
             }
             
-            alert('Redirecting to video: ' + videoId + '\n\nIn a real implementation, this would open the video in the cloud storage platform.');
+            // Load trending videos
+            const trendingGrid = document.getElementById('trendingVideoGrid');
+            const trendingVideos = videoData.trending;
+            
+            // Clear existing content
+            trendingGrid.innerHTML = '';
+            
+            // Add trending videos
+            trendingVideos.forEach(video => {
+                const videoCard = createVideoCard(video);
+                trendingGrid.appendChild(videoCard);
+            });
+            
+            // Load recent videos
+            const recentGrid = document.getElementById('recentVideoGrid');
+            const recentVideos = videoData.recent;
+            
+            // Clear existing content
+            recentGrid.innerHTML = '';
+            
+            // Add recent videos
+            recentVideos.forEach(video => {
+                const videoCard = createVideoCard(video);
+                recentGrid.appendChild(videoCard);
+            });
+        }
+
+        // Function to create video card element
+        function createVideoCard(video) {
+            const card = document.createElement('div');
+            card.className = 'video-card';
+            card.onclick = () => openVideoLink(video.id);
+            
+            card.innerHTML = `
+                <div class="thumbnail-container">
+                    <img class="thumbnail" src="${video.image}" alt="${video.title}" 
+                         onerror="this.style.display='none'; this.parentNode.innerHTML='<div class=\"fallback-thumbnail\"><i class=\"fas fa-play\"></i></div>';">
+                    <div class="play-overlay">
+                        <div class="play-icon">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="video-info">
+                    <div class="video-title">${video.title}</div>
+                    <div class="video-meta">
+                        <span>${video.category}</span>
+                        <span>${video.views}</span>
+                    </div>
+                </div>
+            `;
+            
+            return card;
         }
 
         // Category filter functionality

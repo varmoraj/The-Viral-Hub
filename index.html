@@ -31,14 +31,15 @@
             overflow-x: hidden;
         }
 
-        /* Agreement Modal Styles - ALWAYS SHOW FIRST */
+        /* Agreement Modal Styles - Transparent background */
         .agreement-modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(255, 255, 255, 0.45); /* Light semi-transparent background */
+            backdrop-filter: blur(3px); /* Slight blur effect for background */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -53,8 +54,9 @@
             width: 90%;
             max-height: 85vh;
             overflow-y: auto;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
             animation: modalAppear 0.5s ease-out;
+            border: 1px solid var(--border);
         }
 
         @keyframes modalAppear {
@@ -222,12 +224,17 @@
             transform: translateY(-2px);
         }
 
-        /* Main Website Styles (hidden until agreement) */
+        /* Main Website Styles - ALWAYS VISIBLE IN BACKGROUND */
         .website-content {
-            display: none;
+            display: block; /* Always show in background */
+            filter: blur(0);
+            transition: filter 0.3s;
         }
 
-        /* Rest of your existing CSS remains exactly the same */
+        .agreement-modal.active ~ .website-content {
+            filter: blur(3px); /* Blur website when modal is active */
+        }
+
         /* Header Styles */
         header {
             background-color: var(--background);
@@ -394,6 +401,12 @@
             overflow: hidden;
             transition: transform 0.3s, box-shadow 0.3s;
             border: 1px solid var(--border);
+            cursor: pointer;
+            pointer-events: none; /* Disable clicks when modal is active */
+        }
+
+        .agreement-modal.active ~ .website-content .video-card {
+            pointer-events: none; /* Disable clicks when modal is active */
         }
 
         .video-card:hover {
@@ -486,6 +499,11 @@
             cursor: pointer;
             transition: all 0.3s;
             border: 1px solid var(--border);
+            pointer-events: none; /* Disable clicks when modal is active */
+        }
+
+        .agreement-modal.active ~ .website-content .category {
+            pointer-events: none; /* Disable clicks when modal is active */
         }
 
         .category.active, .category:hover {
@@ -604,7 +622,7 @@
     </style>
 </head>
 <body>
-    <!-- Agreement Modal - This shows FIRST when page loads -->
+    <!-- Agreement Modal - Shows over website background -->
     <div class="agreement-modal" id="agreementModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -678,7 +696,7 @@
         <button class="btn-return" id="returnBtn">Return to Terms</button>
     </div>
 
-    <!-- Main Website Content (hidden until agreement) -->
+    <!-- Main Website Content - ALWAYS VISIBLE IN BACKGROUND -->
     <div class="website-content" id="websiteContent">
         <!-- Header -->
         <header>
@@ -956,31 +974,64 @@
         const disagreeBtn = document.getElementById('disagreeBtn');
         const returnBtn = document.getElementById('returnBtn');
 
-        // Initialize - ALWAYS show agreement modal first (unless user already agreed)
+        // Initialize - Show agreement modal over website background
         document.addEventListener('DOMContentLoaded', function() {
             // Check if user has already agreed
             if (localStorage.getItem('viralHubAgreed') === 'true') {
-                // User already agreed, show website
+                // User already agreed, hide modal and enable website
                 agreementModal.style.display = 'none';
                 websiteContent.style.display = 'block';
                 exitScreen.style.display = 'none';
+                enableWebsiteInteractions();
             } else {
-                // First time visit, show agreement modal
+                // First time visit, show agreement modal over website
                 agreementModal.style.display = 'flex';
-                websiteContent.style.display = 'none';
+                agreementModal.classList.add('active');
+                websiteContent.style.display = 'block';
                 exitScreen.style.display = 'none';
+                disableWebsiteInteractions();
             }
         });
+
+        // Function to enable website interactions
+        function enableWebsiteInteractions() {
+            const videoCards = document.querySelectorAll('.video-card');
+            const categories = document.querySelectorAll('.category');
+            
+            videoCards.forEach(card => {
+                card.style.pointerEvents = 'auto';
+            });
+            
+            categories.forEach(category => {
+                category.style.pointerEvents = 'auto';
+            });
+        }
+
+        // Function to disable website interactions
+        function disableWebsiteInteractions() {
+            const videoCards = document.querySelectorAll('.video-card');
+            const categories = document.querySelectorAll('.category');
+            
+            videoCards.forEach(card => {
+                card.style.pointerEvents = 'none';
+            });
+            
+            categories.forEach(category => {
+                category.style.pointerEvents = 'none';
+            });
+        }
 
         // Handle agreement
         agreeBtn.addEventListener('click', function() {
             // Store agreement in localStorage
             localStorage.setItem('viralHubAgreed', 'true');
             
-            // Hide modal and show website
+            // Hide modal and enable website
             agreementModal.style.display = 'none';
+            agreementModal.classList.remove('active');
             websiteContent.style.display = 'block';
             exitScreen.style.display = 'none';
+            enableWebsiteInteractions();
             
             // Show welcome message
             setTimeout(() => {
@@ -992,26 +1043,42 @@
         disagreeBtn.addEventListener('click', function() {
             // Hide modal and show exit screen
             agreementModal.style.display = 'none';
-            websiteContent.style.display = 'none';
+            agreementModal.classList.remove('active');
+            websiteContent.style.display = 'block';
             exitScreen.style.display = 'flex';
+            disableWebsiteInteractions();
         });
 
         // Handle return from exit screen
         returnBtn.addEventListener('click', function() {
             // Show agreement modal again
             exitScreen.style.display = 'none';
-            websiteContent.style.display = 'none';
+            websiteContent.style.display = 'block';
             agreementModal.style.display = 'flex';
+            agreementModal.classList.add('active');
+            disableWebsiteInteractions();
         });
 
         // Website functionality
         function openVideo(videoId) {
+            // Check if user has agreed
+            if (localStorage.getItem('viralHubAgreed') !== 'true') {
+                alert('Please agree to the Terms & Conditions first!');
+                return;
+            }
+            
             alert('Redirecting to video: ' + videoId + '\n\nIn a real implementation, this would open the video in the cloud storage platform.');
         }
 
         // Category filter functionality
         document.querySelectorAll('.category').forEach(category => {
             category.addEventListener('click', function() {
+                // Check if user has agreed
+                if (localStorage.getItem('viralHubAgreed') !== 'true') {
+                    alert('Please agree to the Terms & Conditions first!');
+                    return;
+                }
+                
                 document.querySelectorAll('.category').forEach(cat => {
                     cat.classList.remove('active');
                 });
@@ -1025,6 +1092,12 @@
         if (searchBox) {
             searchBox.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
+                    // Check if user has agreed
+                    if (localStorage.getItem('viralHubAgreed') !== 'true') {
+                        alert('Please agree to the Terms & Conditions first!');
+                        return;
+                    }
+                    
                     alert('Searching for: ' + this.value);
                 }
             });
@@ -1034,6 +1107,12 @@
         const mobileMenu = document.querySelector('.mobile-menu');
         if (mobileMenu) {
             mobileMenu.addEventListener('click', function() {
+                // Check if user has agreed
+                if (localStorage.getItem('viralHubAgreed') !== 'true') {
+                    alert('Please agree to the Terms & Conditions first!');
+                    return;
+                }
+                
                 alert('Mobile menu would open here');
             });
         }

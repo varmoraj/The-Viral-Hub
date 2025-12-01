@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Viral Hub - Your Gateway to Trending Content</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        :root {
+            --primary: #000000;
+            --secondary: #555555;
+            --accent: #888888;
+            --background: #ffffff;
+            --surface: #f5f5f5;
+            --border: #e0e0e0;
+            --agree-color: #10b981;
+            --disagree-color: #ef4444;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Agreement Modal Styles - ALWAYS SHOW FIRST */
+        .agreement-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--background);
+            padding: 2.5rem;
+            border-radius: 12px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            animation: modalAppear 0.5s ease-out;
+        }
+
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .modal-header i {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-right: 1rem;
+        }
+
+        .modal-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .agreement-text {
+            margin-bottom: 2rem;
+            color: var(--secondary);
+            line-height: 1.7;
+        }
+
+        .agreement-text h3 {
+            margin: 1.5rem 0 0.5rem;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+
+        .agreement-text ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .agreement-text li {
+            margin-bottom: 0.5rem;
+            padding-left: 0.5rem;
+        }
+
+        .highlight-box {
+            background: rgba(239, 68, 68, 0.08);
+            padding: 1.2rem;
+            border-radius: 8px;
+            border-left: 5px solid var(--disagree-color);
+            margin: 2rem 0;
+        }
+
+        .highlight-box strong {
+            color: var(--disagree-color);
+            font-size: 1.1rem;
+        }
+
+        /* Button Styles */
+        .modal-buttons {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 2.5rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-agree {
+            background: var(--agree-color);
+            color: white;
+        }
+
+        .btn-agree:hover {
+            background: #0da271;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-disagree {
+            background: var(--disagree-color);
+            color: white;
+        }
+
+        .btn-disagree:hover {
+            background: #dc2626;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Exit Screen */
+        .exit-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--background);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .exit-screen i {
+            font-size: 5rem;
+            color: var(--disagree-color);
+            margin-bottom: 2rem;
+        }
+
+        .exit-screen h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        .exit-screen p {
+            font-size: 1.2rem;
+            color: var(--secondary);
+            max-width: 500px;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .btn-return {
+            padding: 1rem 2rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+        }
+
+        .btn-return:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        /* Main Website Styles (hidden until agreement) */
+        .website-content {
+            display: none;
+        }
+
+        /* Rest of your existing CSS remains exactly the same */
+        /* Header Styles */
+        header {
+            background-color: var(--background);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1.5rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo i {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--surface);
+            border-radius: 24px;
+            padding: 0.5rem 1rem;
+            width: 300px;
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+
+        .search-box i {
+            color: var(--accent);
+            margin-right: 0.5rem;
+        }
+
+        .mobile-menu {
+            display: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 3rem 1.5rem;
+            text-align: center;
+            background: linear-gradient(to bottom, var(--surface), var(--background));
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--secondary);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--primary);
+            color: var(--background);
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .cta-button:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem 3rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .view-all {
+            color: var(--secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .view-all:hover {
+            color: var(--primary);
+        }
+
+        /* Video Grid */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .video-card {
+            background: var(--background);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        }
+
+        .thumbnail-container {
+            position: relative;
+            width: 100%;
+            height: 160px;
+            background: var(--surface);
+            overflow: hidden;
+        }
+
+        .thumbnail {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .video-card:hover .thumbnail {
+            transform: scale(1.05);
+        }
+
+        .play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .video-card:hover .play-overlay {
+            opacity: 1;
+        }
+
+        .play-icon {
+            color: white;
+            font-size: 2rem;
+            background: rgba(0,0,0,0.7);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-info {
+            padding: 1rem;
+        }
+
+        .video-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .video-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Categories */
+        .categories {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+
+        .category {
+            padding: 0.5rem 1rem;
+            background: var(--surface);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .category.active, .category:hover {
+            background: var(--primary);
+            color: var(--background);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--surface);
+            padding: 3rem 0 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-column h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.7rem;
+        }
+
+        .footer-links a {
+            color: var(--secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--secondary);
+            font-size: 0.9rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links, .search-box {
+                display: none;
+            }
+            
+            .mobile-menu {
+                display: block;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .video-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-buttons {
+                flex-direction: column;
+            }
+            
+            .modal-content {
+                padding: 1.5rem;
+            }
+            
+            .modal-header h2 {
+                font-size: 1.5rem;
+            }
+            
+            .btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero {
+                padding: 2rem 1rem;
+            }
+            
+            .container {
+                padding: 0 1rem 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Agreement Modal - This shows FIRST when page loads -->
+    <div class="agreement-modal" id="agreementModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h2>Terms & Conditions</h2>
+            </div>
+            
+            <div class="agreement-text">
+                <p>Welcome to <strong>The Viral Hub</strong>. Before you proceed, please read and acknowledge the following terms and conditions:</p>
+                
+                <h3>1. Service Disclaimer</h3>
+                <p>The Viral Hub acts solely as an index of content available on third-party cloud storage platforms. We do not host, store, or distribute any video content on our servers.</p>
+                
+                <h3>2. User Responsibilities</h3>
+                <ul>
+                    <li>All videos are hosted on external cloud services (Terabox, Google Drive, etc.)</li>
+                    <li>We only provide links to access content available on these platforms</li>
+                    <li>You are responsible for verifying the legality of content in your jurisdiction</li>
+                    <li>You must comply with all applicable laws and regulations</li>
+                    <li>We are not responsible for any damages or issues from accessing external services</li>
+                </ul>
+                
+                <h3>3. Content Access</h3>
+                <ul>
+                    <li>You access all content at your own risk</li>
+                    <li>We have no control over third-party content</li>
+                    <li>You are solely responsible for your actions while using this service</li>
+                    <li>The Viral Hub does not endorse or promote any specific content</li>
+                </ul>
+                
+                <div class="highlight-box">
+                    <p><strong>IMPORTANT:</strong> By clicking "AGREE & CONTINUE", you acknowledge that you have read, understood, and agree to all the terms above. You accept full responsibility for accessing any content through this service.</p>
+                </div>
+                
+                <h3>4. What You'll Access</h3>
+                <p>After agreeing, you'll get access to:</p>
+                <ul>
+                    <li>Trending videos from various sources</li>
+                    <li>Categorized content for easy browsing</li>
+                    <li>Search functionality to find specific videos</li>
+                    <li>Links to cloud storage platforms where videos are hosted</li>
+                </ul>
+            </div>
+            
+            <!-- Only two buttons - no checkbox -->
+            <div class="modal-buttons">
+                <button class="btn btn-disagree" id="disagreeBtn">
+                    <i class="fas fa-times"></i>
+                    DISAGREE & EXIT
+                </button>
+                <button class="btn btn-agree" id="agreeBtn">
+                    <i class="fas fa-check"></i>
+                    AGREE & CONTINUE
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exit Screen (shown when user disagrees) -->
+    <div class="exit-screen" id="exitScreen">
+        <i class="fas fa-door-closed"></i>
+        <h2>Access Denied</h2>
+        <p>You have chosen not to agree to the Terms & Conditions. To access The Viral Hub and browse trending videos, you must agree to the terms.</p>
+        <p style="color: var(--primary); font-weight: 500; margin: 1rem 0;">What you're missing:</p>
+        <ul style="text-align: left; max-width: 400px; margin: 0 auto 2rem; color: var(--secondary);">
+            <li>Trending video content</li>
+            <li>Categorized browsing</li>
+            <li>Search functionality</li>
+            <li>Cloud storage links</li>
+        </ul>
+        <button class="btn-return" id="returnBtn">Return to Terms</button>
+    </div>
+
+    <!-- Main Website Content (hidden until agreement) -->
+    <div class="website-content" id="websiteContent">
+        <!-- Header -->
+        <header>
+            <nav class="nav-container">
+                <a href="#" class="logo">
+                    <i class="fas fa-virus"></i>
+                    The Viral Hub
+                </a>
+                
+                <div class="nav-links">
+                    <a href="#" class="active">Home</a>
+                    <a href="#">Trending</a>
+                    <a href="#">Categories</a>
+                    <a href="#">Library</a>
+                </div>
+                
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search videos...">
+                </div>
+                
+                <div class="mobile-menu">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Discover Viral Content From Across The Web</h1>
+                <p>Your gateway to the latest trending videos. Simple, fast, and user-friendly.</p>
+                <a href="#trending" class="cta-button">Explore Trending</a>
+            </div>
+        </section>
+
+        <!-- Main Content -->
+        <div class="container">
+            <!-- Categories -->
+            <div class="categories">
+                <div class="category active">All</div>
+                <div class="category">Entertainment</div>
+                <div class="category">Music</div>
+                <div class="category">Sports</div>
+                <div class="category">Education</div>
+                <div class="category">Gaming</div>
+                <div class="category">Lifestyle</div>
+            </div>
+
+            <!-- Trending Section -->
+            <div class="section-header">
+                <h2 class="section-title" id="trending">Trending Now</h2>
+                <a href="#" class="view-all">View All</a>
+            </div>
+            
+            <div class="video-grid">
+                <!-- Video Card 1 -->
+                <div class="video-card" onclick="openVideo('trending-1')">
+                    <div class="thumbnail-container">
+                        <div class="thumbnail" style="background: linear-gradient(135deg, #667eea, #764ba2);"></div>
+                        <div class="play-overlay">
+                            <div class="play-icon">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">Latest Blockbuster Movie Official Trailer</div>
+                        <div class="video-meta">
+                            <span>Movie Trailers</span>
+                            <span>2.1M views</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Card 2 -->
+                <div class="video-card" onclick="openVideo('trending-2')">
+                    <div class="thumbnail-container">
+                        <div class="thumbnail" style="background: linear-gradient(135deg, #f093fb, #f5576c);"></div>
+                        <div class="play-overlay">
+                            <div class="play-icon">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">Top Viral Moments of The Week</div>
+                        <div class="video-meta">
+                            <span>Entertainment</span>
+                            <span>850K views</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Card 3 -->
+                <div class="video-card" onclick="openVideo('trending-3')">
+                    <div class="thumbnail-container">
+                        <div class="thumbnail" style="background: linear-gradient(135deg, #4facfe, #00f2fe);"></div>
+                        <div class="play-overlay">
+                            <div class="play-icon">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">Chart-Topping Music Video Release</div>
+                        <div class="video-meta">
+                            <span>Music</span>
+                            <span>5.4M views</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Card 4 -->
+                <div class="video-card" onclick="openVideo('trending-4')">
+                    <div class="thumbnail-container">
+                        <div class="thumbnail" style="background: linear-gradient(135deg, #43e97b, #38f9d7);"></div>
+                        <div class="play-overlay">
+                            <div class="play-icon">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">Ultimate Sports Highlights Compilation</div>
+                        <div class="video-meta">
+                            <span>Sports</span>
+                            <span>1.8M views</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recently Added -->
+            <div class="section-header">
+                <h2 class="section-title">Recently Added</h2>
+                <a href="#" class="view-all">View All</a>
+            </div>
+            
+            <div class="video-grid">
+                <!-- Video Card 5 -->
+                <div class="video-card" onclick="openVideo('recent-1')">
+                    <div class="thumbnail-container">
+                        <div class="thumbnail" style="background: linear-gradient(135deg, #fa709a, #fee140);"></div>
+                        <div class="play-overlay">
+                            <div class="play-icon">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">Comedy Special Preview - New Release</div>
+                        <div class="video-meta">
+                            <span>Comedy</span>
+                            <span>320K views</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Card 6 -->
+                <div class="video-card" onclick="openVideo('recent-2')">
+                    <div class="thumbnail-container">
+                        <div class="thumbnail" style="background: linear-gradient(135deg, #a8edea, #fed6e3);"></div>
+                        <div class="play-overlay">
+                            <div class="play-icon">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">Educational Science Series Episode 5</div>
+                        <div class="video-meta">
+                            <span>Education</span>
+                            <span>150K views</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Card 7 -->
+                <div class="video-card" onclick="openVideo('recent-3')">
+                    <div class="thumbnail-container">
+                        <div class="thumbnail" style="background: linear-gradient(135deg, #d299c2, #fef9d7);"></div>
+                        <div class="play-overlay">
+                            <div class="play-icon">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">Gaming Tournament Highlights - Finals</div>
+                        <div class="video-meta">
+                            <span>Gaming</span>
+                            <span>950K views</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Card 8 -->
+                <div class="video-card" onclick="openVideo('recent-4')">
+                    <div class="thumbnail-container">
+                        <div class="thumbnail" style="background: linear-gradient(135deg, #89f7fe, #66a6ff);"></div>
+                        <div class="play-overlay">
+                            <div class="play-icon">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">Lifestyle Vlog - Travel Adventure Series</div>
+                        <div class="video-meta">
+                            <span>Lifestyle</span>
+                            <span>420K views</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>The Viral Hub</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                        <li><a href="#">DMCA</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Community</a></li>
+                        <li><a href="#">Status</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Connect</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Twitter</a></li>
+                        <li><a href="#">Facebook</a></li>
+                        <li><a href="#">Instagram</a></li>
+                        <li><a href="#">YouTube</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                &copy; 2023 The Viral Hub. All rights reserved. We do not host any videos on our servers.
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Agreement functionality
+        const agreementModal = document.getElementById('agreementModal');
+        const websiteContent = document.getElementById('websiteContent');
+        const exitScreen = document.getElementById('exitScreen');
+        const agreeBtn = document.getElementById('agreeBtn');
+        const disagreeBtn = document.getElementById('disagreeBtn');
+        const returnBtn = document.getElementById('returnBtn');
+
+        // Initialize - ALWAYS show agreement modal first (unless user already agreed)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user has already agreed
+            if (localStorage.getItem('viralHubAgreed') === 'true') {
+                // User already agreed, show website
+                agreementModal.style.display = 'none';
+                websiteContent.style.display = 'block';
+                exitScreen.style.display = 'none';
+            } else {
+                // First time visit, show agreement modal
+                agreementModal.style.display = 'flex';
+                websiteContent.style.display = 'none';
+                exitScreen.style.display = 'none';
+            }
+        });
+
+        // Handle agreement
+        agreeBtn.addEventListener('click', function() {
+            // Store agreement in localStorage
+            localStorage.setItem('viralHubAgreed', 'true');
+            
+            // Hide modal and show website
+            agreementModal.style.display = 'none';
+            websiteContent.style.display = 'block';
+            exitScreen.style.display = 'none';
+            
+            // Show welcome message
+            setTimeout(() => {
+                alert('Welcome to The Viral Hub! Enjoy exploring trending videos.');
+            }, 500);
+        });
+
+        // Handle disagreement
+        disagreeBtn.addEventListener('click', function() {
+            // Hide modal and show exit screen
+            agreementModal.style.display = 'none';
+            websiteContent.style.display = 'none';
+            exitScreen.style.display = 'flex';
+        });
+
+        // Handle return from exit screen
+        returnBtn.addEventListener('click', function() {
+            // Show agreement modal again
+            exitScreen.style.display = 'none';
+            websiteContent.style.display = 'none';
+            agreementModal.style.display = 'flex';
+        });
+
+        // Website functionality
+        function openVideo(videoId) {
+            alert('Redirecting to video: ' + videoId + '\n\nIn a real implementation, this would open the video in the cloud storage platform.');
+        }
+
+        // Category filter functionality
+        document.querySelectorAll('.category').forEach(category => {
+            category.addEventListener('click', function() {
+                document.querySelectorAll('.category').forEach(cat => {
+                    cat.classList.remove('active');
+                });
+                this.classList.add('active');
+                console.log('Filtering by: ' + this.textContent);
+            });
+        });
+
+        // Search functionality
+        const searchBox = document.querySelector('.search-box input');
+        if (searchBox) {
+            searchBox.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    alert('Searching for: ' + this.value);
+                }
+            });
+        }
+
+        // Mobile menu toggle
+        const mobileMenu = document.querySelector('.mobile-menu');
+        if (mobileMenu) {
+            mobileMenu.addEventListener('click', function() {
+                alert('Mobile menu would open here');
+            });
+        }
+    </script>
+</body>
+</html>
